@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photographer Portfolio</title>
+    <meta name="description" content="Commercial Photographer Portfolio - Product & Model Photography">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <header class="site-header">
+        <div class="logo">STUDIO NAME</div>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="#portfolio" class="active" data-tab="photography">Photography</a></li>
+                <li><a href="#portfolio" data-tab="videography">Videography</a></li>
+                <li><a href="#blog">Blog</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="hero-section">
+            <div class="hero-content">
+                <h1>Capturing Essence</h1>
+                <p>Commercial Product & Model Photography</p>
+            </div>
+        </section>
+
+        <section id="portfolio" class="portfolio-section">
+            <div class="tab-content active" id="photography">
+                <div class="gallery-grid">
+                    <!-- Placeholder for Photography Items -->
+                    <div class="gallery-item">
+                        <div class="placeholder">Photo 1</div>
+                    </div>
+                    <div class="gallery-item">
+                        <div class="placeholder">Photo 2</div>
+                    </div>
+                    <div class="gallery-item">
+                        <div class="placeholder">Photo 3</div>
+                    </div>
+                    <div class="gallery-item">
+                        <div class="placeholder">Photo 4</div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-content" id="videography">
+                <div class="gallery-grid">
+                    <!-- Placeholder for Videography Items -->
+                    <div class="gallery-item">
+                        <div class="placeholder">Video 1</div>
+                    </div>
+                    <div class="gallery-item">
+                        <div class="placeholder">Video 2</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="blog" class="blog-section">
+            <h2>Work Journal</h2>
+            <div class="blog-grid" id="blog-grid">
+                <!-- Blog posts will be loaded here -->
+            </div>
+        </section>
+
+        <section id="about" class="about-section">
+            <h2>About Me</h2>
+            <p>Professional photographer specializing in commercial product and high-end fashion model photography.</p>
+        </section>
+
+        <section id="contact" class="contact-section">
+            <h2>Contact</h2>
+            <p>Get in touch for inquiries and bookings.</p>
+            <a href="mailto:contact@example.com" class="cta-button">Email Me</a>
+        </section>
+    </main>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="lightbox">
+        <span class="close-lightbox">&times;</span>
+        <div class="lightbox-content">
+            <img id="lightbox-img" src="" alt="">
+            <video id="lightbox-video" controls style="display:none;"></video>
+            <div id="lightbox-slider" class="ba-slider" style="display:none; width: 80vw; height: 80vh;">
+                <!-- Content injected dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Blog Detail Modal -->
+    <div id="blog-modal" class="blog-modal">
+        <div class="blog-modal-content">
+            <span class="close-blog-modal">&times;</span>
+            <div class="blog-modal-header">
+                <h2 id="blog-modal-title">Blog Title</h2>
+                <span id="blog-modal-date">Date</span>
+            </div>
+            <div id="blog-modal-body" class="blog-body-content">
+                <!-- Content injected here -->
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <p>&copy; 2025 Studio Name. All rights reserved.</p>
+        <a href="admin.html" target="_blank" class="text-btn" style="text-decoration:none;">Admin</a>
+    </footer>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+
+    <script src="firebase-config.js"></script>
+    <script src="db.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

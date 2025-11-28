@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Admin Dashboard - Studio Name</title>
+    <link rel="stylesheet" href="admin.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Quill CSS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Admin Panel</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#" class="nav-link active" data-target="dashboard">Dashboard</a></li>
+                    <li><a href="#" class="nav-link" data-target="portfolio-manager">Portfolio Manager</a></li>
+                    <li><a href="#" class="nav-link" data-target="blog-manager">Blog Manager</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="index.html" target="_blank">View Site</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Dashboard View -->
+            <section id="dashboard" class="content-section active">
+                <header class="content-header">
+                    <h1>Dashboard Overview</h1>
+                </header>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Photos</h3>
+                        <p id="stat-photos">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Videos</h3>
+                        <p id="stat-videos">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Blog Posts</h3>
+                        <p id="stat-blog">0</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Portfolio Manager View -->
+            <section id="portfolio-manager" class="content-section">
+                <header class="content-header">
+                    <h1>Portfolio Manager</h1>
+                </header>
+
+                <div class="manager-layout">
+                    <!-- Upload Form -->
+                    <div class="upload-panel">
+                        <h3>Add New Work</h3>
+                        <form id="portfolio-upload-form">
+                            <div class="form-group">
+                                <label>Category</label>
+                                <select id="portfolio-category">
+                                    <option value="photography">Photography</option>
+                                    <option value="videography">Videography</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Title (Optional)</label>
+                                <input type="text" id="portfolio-title" placeholder="e.g. Summer Campaign">
+                            </div>
+                            <div class="form-group">
+                                <label>Main Image (Required)</label>
+                                <input type="file" id="file-after" accept="image/*,video/*" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Before Image (Optional)</label>
+                                <input type="file" id="file-before" accept="image/*">
+                            </div>
+                            <button type="submit" class="btn-primary">Upload Item</button>
+                        </form>
+                    </div>
+
+                    <!-- List Table -->
+                    <div class="list-panel">
+                        <h3>Existing Items</h3>
+                        <div class="table-container">
+                            <table id="portfolio-table">
+                                <thead>
+                                    <tr>
+                                        <th>Preview</th>
+                                        <th>Title</th>
+                                        <th>Category</th>
+                                        <th>Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamic Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Blog Manager View -->
+            <section id="blog-manager" class="content-section">
+                <header class="content-header">
+                    <h1>Blog Manager</h1>
+                </header>
+
+                <div class="manager-layout">
+                    <!-- Write Form -->
+                    <div class="upload-panel">
+                        <h3>Write New Post</h3>
+                        <form id="blog-form" class="naver-blog-editor">
+                            <!-- Custom Toolbar -->
+                            <div id="toolbar-container">
+                                <div class="toolbar-top">
+                                    <span class="ql-formats">
+                                        <button class="ql-image" title="사진">
+                                            <span class="icon">📷</span> <span class="label">사진</span>
+                                        </button>
+                                        <button class="ql-video" title="동영상">
+                                            <span class="icon">📹</span> <span class="label">동영상</span>
+                                        </button>
+                                        <button class="ql-sticker-dummy" type="button">
+                                            <span class="icon">☺</span> <span class="label">스티커</span>
+                                        </button>
+                                        <button class="ql-blockquote" title="인용구">
+                                            <span class="icon">❝</span> <span class="label">인용구</span>
+                                        </button>
+                                        <button class="ql-divider-dummy" type="button">
+                                            <span class="icon">―</span> <span class="label">구분선</span>
+                                        </button>
+                                        <button class="ql-link" title="링크">
+                                            <span class="icon">🔗</span> <span class="label">링크</span>
+                                        </button>
+                                    </span>
+                                </div>
+                                <div class="toolbar-bottom">
+                                    <span class="ql-formats">
+                                        <select class="ql-header">
+                                            <option value="1">제목 1</option>
+                                            <option value="2">제목 2</option>
+                                            <option value="3">제목 3</option>
+                                            <option selected>본문</option>
+                                        </select>
+                                        <select class="ql-size">
+                                            <option value="small">작게</option>
+                                            <option selected>보통</option>
+                                            <option value="large">크게</option>
+                                            <option value="huge">아주 크게</option>
+                                        </select>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-bold"></button>
+                                        <button class="ql-italic"></button>
+                                        <button class="ql-underline"></button>
+                                        <button class="ql-strike"></button>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <select class="ql-color"></select>
+                                        <select class="ql-background"></select>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <select class="ql-align"></select>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-list" value="ordered"></button>
+                                        <button class="ql-list" value="bullet"></button>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Title Input -->
+                            <div class="editor-header">
+                                <input type="text" id="blog-title" placeholder="제목" required autocomplete="off">
+
+                                <!-- Cover Image Section -->
+                                <div class="cover-image-section"
+                                    style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #eee;">
+                                    <label for="blog-image-visible"
+                                        style="font-size: 13px; color: #666; display: block; margin-bottom: 8px;">
+                                        대표 이미지 (썸네일) 설정
+                                        <span style="font-size: 11px; color: #999; margin-left: 5px;">(권장: 16:9 비율,
+                                            1200x675px)</span>
+                                    </label>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <button type="button" id="btn-upload-cover"
+                                            style="padding: 6px 12px; border: 1px solid #ddd; background: #fff; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                                            이미지 선택...
+                                        </button>
+                                        <span id="cover-file-name" style="font-size: 12px; color: #888;">선택된 파일
+                                            없음</span>
+                                    </div>
+                                    <div id="cover-preview" style="margin-top: 10px; display: none;">
+                                        <img src="" alt="Cover Preview"
+                                            style="height: 80px; border-radius: 4px; border: 1px solid #eee;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Editor Area -->
+                            <div class="editor-body">
+                                <div id="editor-container"></div>
+                            </div>
+
+                            <!-- Hidden Inputs -->
+                            <input type="file" id="quill-image-upload" accept="image/*" style="display: none;">
+                            <input type="file" id="blog-image" accept="image/*" style="display: none;">
+                            <!-- Kept for compatibility if needed, or we can remove cover image concept for now as per image -->
+
+                            <!-- Footer Actions -->
+                            <div class="editor-footer">
+                                <button type="submit" class="btn-publish">발행</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- List Table -->
+                    <div class="list-panel">
+                        <h3>Recent Posts</h3>
+                        <div class="table-container">
+                            <table id="blog-table">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamic Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+
+    <!-- Quill JS -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+    <script src="firebase-config.js"></script>
+    <script src="db.js"></script>
+    <script src="admin.js"></script>
+</body>
+
+</html>
