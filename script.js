@@ -60,24 +60,37 @@ document.addEventListener('DOMContentLoaded', () => {
         if (type === 'video') {
             lightboxVideo.style.display = 'block';
             lightboxVideo.src = url;
+            lightboxVideo.autoplay = true;
+            lightboxVideo.muted = false; // Try unmuted, user clicked so it should be allowed
+            lightboxVideo.play().catch(e => {
+                console.log("Autoplay failed, trying muted", e);
+                lightboxVideo.muted = true;
+                lightboxVideo.play();
+            });
         } else if (type === 'slider') {
-            // Load image to get dimensions
+            // Load image to get dimensions but force 4:3 ratio container if possible or fit to screen
             const img = new Image();
             img.src = url;
             img.onload = () => {
-                const winWidth = window.innerWidth * 0.9;
-                const winHeight = window.innerHeight * 0.9;
-                const imgRatio = img.width / img.height;
-                const winRatio = winWidth / winHeight;
+                // User requested 4:3 ratio window for comparison
+                // We will try to fit a 4:3 box within the viewport
+                const winWidth = window.innerWidth * 0.95;
+                const winHeight = window.innerHeight * 0.90;
+
+                // Target 4:3 ratio
+                const targetRatio = 4 / 3;
 
                 let finalWidth, finalHeight;
 
-                if (imgRatio > winRatio) {
-                    finalWidth = winWidth;
-                    finalHeight = winWidth / imgRatio;
-                } else {
+                // Calculate dimensions to fit in viewport while maintaining 4:3
+                if (winWidth / winHeight > targetRatio) {
+                    // Window is wider than 4:3, constrain by height
                     finalHeight = winHeight;
-                    finalWidth = winHeight * imgRatio;
+                    finalWidth = finalHeight * targetRatio;
+                } else {
+                    // Window is narrower than 4:3, constrain by width
+                    finalWidth = winWidth;
+                    finalHeight = finalWidth / targetRatio;
                 }
 
                 lightboxSlider.style.width = `${finalWidth}px`;
@@ -167,7 +180,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (isVideo) {
                 // Added playsinline and preload for better mobile support. Removed controls to avoid confusion with pointer-events:none
-                div.innerHTML = `<video src="${afterUrl}" muted loop playsinline preload="metadata" onmouseover="this.play()" onmouseout="this.pause()"></video>`;
+                // Append #t=0.001 to force first frame thumbnail on some browsers
+                div.innerHTML = `<video src="${afterUrl}#t=0.001" muted loop playsinline preload="metadata" onmouseover="this.play()" onmouseout="this.pause()"></video>`;
             } else {
                 div.innerHTML = `<img src="${afterUrl}" alt="${data.title}">`;
             }
