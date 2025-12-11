@@ -17,8 +17,9 @@ const storage = firebase.storage();
 // --- Database Functions ---
 
 async function saveToDB(collectionName, data) {
-    // Handle File Uploads first if blobs are present
+    // Handle File Uploads first if blobs/files are present
     // We expect 'afterBlob', 'beforeBlob', 'imageBlob' in data
+    // These can be Blob or File objects.
     // We need to convert them to Storage URLs
 
     const uploads = [];
@@ -62,14 +63,26 @@ async function deleteFromDB(collectionName, id) {
 
 // --- Helper Functions ---
 
-async function uploadFile(blob, folder) {
-    const filename = `${Date.now()}_${Math.random().toString(36).substring(7)}`;
+async function uploadFile(fileOrBlob, folder) {
+    let extension = '';
+
+    // If it's a File object (has name property), try to get extension
+    if (fileOrBlob.name) {
+        const parts = fileOrBlob.name.split('.');
+        if (parts.length > 1) {
+            extension = '.' + parts.pop();
+        }
+    }
+    // If it's a Blob with type, we could guess, but File object is safer for exact extension.
+    // Fallback if no extension found but type is known (optional improvement)
+
+    const filename = `${Date.now()}_${Math.random().toString(36).substring(7)}${extension}`;
     const ref = storage.ref(`${folder}/${filename}`);
-    await ref.put(blob);
+    await ref.put(fileOrBlob);
     return await ref.getDownloadURL();
 }
 
-// Helper to convert File to Blob (kept for compatibility with admin.js logic)
+// Helper to convert File to Blob (kept for compatibility with admin.js logic if needed)
 async function fileToBlob(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();

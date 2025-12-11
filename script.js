@@ -61,21 +61,36 @@ document.addEventListener('DOMContentLoaded', () => {
             lightboxVideo.style.display = 'block';
             lightboxVideo.src = url;
         } else if (type === 'slider') {
-            lightboxSlider.style.display = 'block';
-            lightboxSlider.innerHTML = `
-                <div class="ba-before" style="background-image: url('${extraData.beforeUrl}')"></div>
-                <div class="ba-after" style="background-image: url('${url}')"></div>
-                <div class="ba-handle"></div>
-            `;
-            // Re-initialize slider logic for the lightbox instance
-            // We need to pass the lightbox-slider element itself, not a wrapper div
-            // But initSlider expects a wrapper with .ba-slider inside. 
-            // Let's adjust initSlider or wrapper.
-            // Actually initSlider expects 'element' and looks for .ba-slider inside.
-            // So we can wrap the content or adjust initSlider.
-            // Simpler: Let's make initSlider accept the slider element directly if it has the class.
+            // Load image to get dimensions
+            const img = new Image();
+            img.src = url;
+            img.onload = () => {
+                const winWidth = window.innerWidth * 0.9;
+                const winHeight = window.innerHeight * 0.9;
+                const imgRatio = img.width / img.height;
+                const winRatio = winWidth / winHeight;
 
-            initSlider(lightbox, true); // Pass true to indicate direct binding or handle logic inside
+                let finalWidth, finalHeight;
+
+                if (imgRatio > winRatio) {
+                    finalWidth = winWidth;
+                    finalHeight = winWidth / imgRatio;
+                } else {
+                    finalHeight = winHeight;
+                    finalWidth = winHeight * imgRatio;
+                }
+
+                lightboxSlider.style.width = `${finalWidth}px`;
+                lightboxSlider.style.height = `${finalHeight}px`;
+                lightboxSlider.style.display = 'block';
+
+                lightboxSlider.innerHTML = `
+                    <div class="ba-before" style="background-image: url('${extraData.beforeUrl}')"></div>
+                    <div class="ba-after" style="background-image: url('${url}')"></div>
+                    <div class="ba-handle"></div>
+                `;
+                initSlider(lightbox, true);
+            };
         } else {
             lightboxImg.style.display = 'block';
             lightboxImg.src = url;
@@ -151,13 +166,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const isVideo = afterUrl.includes('.mp4') || afterUrl.includes('.webm') || afterUrl.includes('.mov');
 
             if (isVideo) {
-                div.innerHTML = `<video src="${afterUrl}" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>`;
+                // Added playsinline and preload for better mobile support. Removed controls to avoid confusion with pointer-events:none
+                div.innerHTML = `<video src="${afterUrl}" muted loop playsinline preload="metadata" onmouseover="this.play()" onmouseout="this.pause()"></video>`;
             } else {
                 div.innerHTML = `<img src="${afterUrl}" alt="${data.title}">`;
             }
 
             // Add click listener for Lightbox
-            div.addEventListener('click', () => {
+            div.addEventListener('click', (e) => {
+                // Prevent lightbox if clicking video controls (though pointer-events:none in CSS might block this, we'll see)
+                // Actually, CSS has pointer-events: none for video in gallery-item. 
+                // We should probably allow clicking the video to play it if controls are there, 
+                // OR keep the lightbox behavior. 
+                // The user said "video doesn't play". 
+                // If we want it to play IN THE GALLERY, we need to remove pointer-events: none.
+                // If we want it to open in lightbox and play there, we keep it.
+                // Let's assume lightbox is the intended player for full view.
                 openLightbox(afterUrl, isVideo ? 'video' : 'image');
             });
         }

@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let title = document.getElementById('portfolio-title').value;
         const fileBefore = document.getElementById('file-before').files[0];
         const fileAfter = document.getElementById('file-after').files[0];
+        const submitBtn = portfolioForm.querySelector('button[type="submit"]');
 
         if (!fileAfter) return alert('Main image is required');
 
@@ -39,19 +40,26 @@ document.addEventListener('DOMContentLoaded', () => {
             title = `Untitled Work ${new Date().toLocaleDateString()}`;
         }
 
+        // Loading State
+        const originalBtnText = submitBtn.textContent;
+        submitBtn.textContent = 'Uploading...';
+        submitBtn.classList.add('blink-animation');
+        submitBtn.disabled = true;
+
         try {
-            const afterBlob = await fileToBlob(fileAfter);
-            let beforeBlob = null;
-            if (fileBefore) {
-                beforeBlob = await fileToBlob(fileBefore);
-            }
+            // Pass File objects directly to saveToDB to preserve name/extension
+            // const afterBlob = await fileToBlob(fileAfter); // Removed
+            // let beforeBlob = null;
+            // if (fileBefore) {
+            //    beforeBlob = await fileToBlob(fileBefore);
+            // }
 
             // saveToDB in db.js now handles the upload to Firebase Storage
             await saveToDB('portfolio', {
                 category,
                 title,
-                afterBlob,
-                beforeBlob,
+                afterBlob: fileAfter, // Pass File object
+                beforeBlob: fileBefore || null, // Pass File object (or null if undefined)
                 // createdAt added by db.js
             });
 
@@ -61,6 +69,11 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error(error);
             alert('Upload Failed: ' + error.message);
+        } finally {
+            // Reset Button State
+            submitBtn.textContent = originalBtnText;
+            submitBtn.classList.remove('blink-animation');
+            submitBtn.disabled = false;
         }
     });
 
@@ -103,8 +116,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     const range = quill.getSelection(true); // Ensure focus
 
                     // Upload
-                    const blob = await fileToBlob(file);
-                    const url = await uploadFile(blob, 'blog-content-images');
+                    // const blob = await fileToBlob(file); // Use file directly if uploadFile supports it
+                    // db.js uploadFile now supports File or Blob. 
+                    // But here we call uploadFile directly? No, we call uploadFile from db.js?
+                    // Wait, admin.js doesn't import uploadFile. It's global from db.js.
+                    // Let's check if uploadFile is global. Yes.
+
+                    const url = await uploadFile(file, 'blog-content-images');
 
                     // Insert
                     quill.insertEmbed(range.index, 'image', url);
@@ -162,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = {
                 title,
                 content,
-                imageBlob: imageFile // saveToDB handles this
+                imageBlob: imageFile // saveToDB handles this (File object)
             };
 
             await saveToDB('blog', data);
@@ -211,8 +229,18 @@ document.addEventListener('DOMContentLoaded', () => {
             // Use URL from Firebase
             const imgUrl = item.afterUrl;
 
+            // Check if video
+            const isVideo = imgUrl.includes('.mp4') || imgUrl.includes('.webm') || imgUrl.includes('.mov');
+
+            let previewHtml;
+            if (isVideo) {
+                previewHtml = `<video src="${imgUrl}" muted loop onmouseover="this.play()" onmouseout="this.pause()" style="width: 50px; height: 50px; object-fit: cover; cursor: pointer;" class="lightbox-trigger" data-type="video" data-src="${imgUrl}"></video>`;
+            } else {
+                previewHtml = `<img src="${imgUrl}" alt="preview" style="width: 50px; height: 50px; object-fit: cover; cursor: pointer;" class="lightbox-trigger" data-type="image" data-src="${imgUrl}">`;
+            }
+
             tr.innerHTML = `
-                <td><img src="${imgUrl}" alt="preview"></td>
+                <td>${previewHtml}</td>
                 <td>${item.title}</td>
                 <td><span class="badge">${item.category}</span></td>
                 <td>${new Date(item.createdAt).toLocaleDateString()}</td>
@@ -248,6 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function attachDeleteListeners() {
+        // Delete Listeners
         const deleteBtns = document.querySelectorAll('.btn-delete');
         deleteBtns.forEach(btn => {
             btn.onclick = async () => {
@@ -274,5 +303,61 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             };
         });
+
+        // Lightbox Listeners
+        const lightboxTriggers = document.querySelectorAll('.lightbox-trigger');
+        lightboxTriggers.forEach(trigger => {
+            trigger.addEventListener('click', () => {
+                const src = trigger.getAttribute('data-src');
+                const type = trigger.getAttribute('data-type');
+                openLightbox(src, type);
+            });
+        });
+    }
+
+    // --- Lightbox Logic ---
+    const lightbox = document.getElementById('lightbox');
+    const lightboxContent = lightbox.querySelector('.lightbox-content');
+    const lightboxClose = lightbox.querySelector('.lightbox-close');
+
+    function openLightbox(src, type) {
+        lightboxContent.innerHTML = ''; // Clear previous content
+
+        if (type === 'video') {
+            const video = document.createElement('video');
+            video.src = src;
+            video.controls = true;
+            video.autoplay = true;
+            video.loop = true;
+            // video.muted = true; // Optional: mute by default? User asked for autoplay, usually requires mute or user interaction. 
+            // But since it's a click interaction, we can try unmuted or let user decide. 
+            // User said "immediately play", usually implies sound if it's a video, but let's stick to standard autoplay policies if needed.
+            // Actually, user didn't specify mute. Let's try unmuted but if browser blocks, it blocks.
+            // Safe bet: muted=false (default), but if it doesn't play, we might need muted=true. 
+            // However, since the user clicked, audio is allowed.
+            lightboxContent.appendChild(video);
+        } else {
+            const img = document.createElement('img');
+            img.src = src;
+            lightboxContent.appendChild(img);
+        }
+
+        lightbox.classList.add('active');
+    }
+
+    // Close Lightbox
+    if (lightboxClose) {
+        lightboxClose.addEventListener('click', closeLightbox);
+    }
+
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) {
+            closeLightbox();
+        }
+    });
+
+    function closeLightbox() {
+        lightbox.classList.remove('active');
+        lightboxContent.innerHTML = ''; // Stop video playback
     }
 });
