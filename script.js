@@ -334,7 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.onclick = () => openBlogModal(data);
 
                 card.innerHTML = `
-                    ${imageUrl ? `<img src="${imageUrl}" style="width:100%; height:200px; object-fit:cover; margin-bottom:1rem;">` : ''}
+                    ${imageUrl ? `<img src="${imageUrl}" style="width:100%; height:auto; object-fit:contain; margin-bottom:1rem;">` : ''}
                     <h3>${data.title}</h3>
                     <span class="blog-date">${new Date(data.createdAt).toLocaleDateString()}</span>
                     <p>${plainText.substring(0, 100)}...</p>
